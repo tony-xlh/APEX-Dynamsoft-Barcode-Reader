@@ -6,10 +6,12 @@ let DBRExtension = {
   processing:undefined,
   barcodeResults:undefined,
   open: async function(){
+    document.getElementById("enhancerUIContainer").style.display = "";
     await this.enhancer.open(true);
   },
   close: function(){
     this.enhancer.close(true);
+    document.getElementById("enhancerUIContainer").style.display = "none";
   },
   startScanning: function(){
     this.stopScanning();
@@ -72,6 +74,7 @@ let DBRExtension = {
       }
     });
     container.appendChild(this.enhancer.getUIElement());
+    container.style.display = "none";
     if ('apex' in window) {
       apex.region.create(
         pConfig.regionID,
