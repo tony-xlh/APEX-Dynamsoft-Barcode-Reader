@@ -13,7 +13,8 @@
       let styles = {width:"100%",height:"100%",left:0,top:0,position:"absolute"}
       await DBRExtension.load({});
       await DBRExtension.init({styles:JSON.stringify(styles)});
-      DBRExtension.open();
+      await DBRExtension.open();
+      DBRExtension.startScanning();
     }
   </script>
 </body>

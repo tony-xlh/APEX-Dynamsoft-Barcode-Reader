@@ -2,11 +2,43 @@ let DBRExtension = {
   reader:undefined,
   enhancer:undefined,
   regionID:undefined,
+  interval:undefined,
+  processing:undefined,
   open: async function(){
     await this.enhancer.open(true);
   },
   close: function(){
     this.enhancer.close(true);
+  },
+  startScanning: function(){
+    this.stopScanning();
+    let pThis = this;
+    const captureAndDecode = async function() {
+      if (!pThis.enhancer || !pThis.reader) {
+        return;
+      }
+      if (pThis.enhancer.isOpen() === false) {
+        return;
+      }
+      if (pThis.processing === true) {
+        return;
+      }
+      pThis.processing = true; // set decoding to true so that the next frame will be skipped if the decoding has not completed.
+      let frame = pThis.enhancer.getFrame();
+      if (frame) {
+        let results = await pThis.reader.decode(frame);
+        console.log(results);
+        pThis.processing = false;
+      }
+    }
+    this.interval = setInterval(captureAndDecode,100); // set an interval to read barcodes
+  },
+  stopScanning: function(){
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = undefined;
+    }
+    this.processing = false;
   },
   init: async function(pConfig){
     this.reader = await Dynamsoft.DBR.BarcodeScanner.createInstance();
@@ -27,6 +59,11 @@ let DBRExtension = {
         container.style[key] = styles[key];
       }
     }
+    this.enhancer.on("played", (playCallbackInfo) => {
+      if (this.interval) {
+        this.startScanning();
+      }
+    });
     container.appendChild(this.enhancer.getUIElement());
   },
   load: async function(pConfig){
