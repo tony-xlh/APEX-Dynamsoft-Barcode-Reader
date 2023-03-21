@@ -29,11 +29,12 @@ let DBRExtension = {
       if (frame) {
         let results = await pThis.reader.decode(frame);
         if (results.length > 0) {
-          this.barcodeResults = results;
+          pThis.barcodeResults = results;
           if ('apex' in window) {
             apex.server.process("SINGLE_BARCODE_SCANNED", {x01:results[0].barcodeText}, {dataType: "text", success: function(){}});
           }
         }
+        //console.log(results);
         pThis.processing = false;
       }
     }
