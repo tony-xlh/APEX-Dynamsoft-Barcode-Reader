@@ -4,6 +4,7 @@ let DBRExtension = {
   regionID:undefined,
   interval:undefined,
   processing:undefined,
+  barcodeResults:undefined,
   open: async function(){
     await this.enhancer.open(true);
   },
@@ -27,7 +28,9 @@ let DBRExtension = {
       let frame = pThis.enhancer.getFrame();
       if (frame) {
         let results = await pThis.reader.decode(frame);
-        console.log(results);
+        if (results.length > 0) {
+          this.barcodeResults = results;
+        }
         pThis.processing = false;
       }
     }
@@ -70,21 +73,27 @@ let DBRExtension = {
         pConfig.regionID,
         {                
           type: 'Dynamsoft Barcode Reader',
-          open: function(){
-            return DBRExtension.open();
+          open: async function(){
+            await DBRExtension.open();
           },
           close: function(){
-            return DBRExtension.close();
+            DBRExtension.close();
           },
           startScanning: function() {
             DBRExtension.startScanning();
           },
           stopScanning: function() {
             DBRExtension.stopScanning();
+          },
+          getResults: function(){
+            return DBRExtension.getResults();
           }
         }
       );
     }
+  },
+  getResults: function() {
+    return this.barcodeResults;
   },
   load: async function(pConfig){
     await this.loadLibrary("https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.6.11/dist/dbr.js","text/javascript");
