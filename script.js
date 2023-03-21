@@ -75,12 +75,17 @@ let DBRExtension = {
         container.style[key] = styles[key];
       }
     }
+    if (pConfig.template) {
+      await this.reader.initRuntimeSettingsWithString(pConfig.template);
+    }
     this.enhancer.on("played", (playCallbackInfo) => {
       if (this.interval) {
         this.startScanning();
       }
     });
     container.appendChild(this.enhancer.getUIElement());
+    // The following line hides the close button
+    document.getElementsByClassName("dce-btn-close")[0].style.display = "none";
     container.style.display = "none";
     if ('apex' in window) {
       apex.region.create(
