@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dynamsoft Barcode Reader Sample</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <style>
+    </style>
+    <script src="script.js"></script>
+</head>
+<body>
+  <script>
+    window.onload = async function(){
+      let styles = {width:"100%",height:"100%",left:0,top:0,position:"absolute"}
+      await DBRExtension.load({});
+      await DBRExtension.init({styles:JSON.stringify(styles)});
+      DBRExtension.open();
+    }
+  </script>
+</body>
+</html>
