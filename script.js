@@ -65,6 +65,26 @@ let DBRExtension = {
       }
     });
     container.appendChild(this.enhancer.getUIElement());
+    if ('apex' in window) {
+      apex.region.create(
+        pConfig.regionID,
+        {                
+          type: 'Dynamsoft Barcode Reader',
+          open: function(){
+            return DBRExtension.open();
+          },
+          close: function(){
+            return DBRExtension.close();
+          },
+          startScanning: function() {
+            DBRExtension.startScanning();
+          },
+          stopScanning: function() {
+            DBRExtension.stopScanning();
+          }
+        }
+      );
+    }
   },
   load: async function(pConfig){
     await this.loadLibrary("https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.6.11/dist/dbr.js","text/javascript");
