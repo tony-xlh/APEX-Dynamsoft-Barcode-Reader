@@ -2,6 +2,7 @@ let DBRExtension = {
   reader:undefined,
   enhancer:undefined,
   regionID:undefined,
+  item:undefined,
   interval:undefined,
   processing:undefined,
   barcodeResults:undefined,
@@ -33,7 +34,12 @@ let DBRExtension = {
         if (results.length > 0) {
           pThis.barcodeResults = results;
           if ('apex' in window) {
-            apex.server.process("SINGLE_BARCODE_SCANNED", {x01:results[0].barcodeText}, {dataType: "text", success: function(){}});
+            if (pThis.item) {
+              apex.item(pThis.item).setValue(results[0].barcodeText);
+            }
+            //if (pThis.ajax) {
+            //  apex.server.process("SINGLE_BARCODE_SCANNED", {x01:results[0].barcodeText}, {dataType: "text", success: function(){}});
+            //}
           }
         }
         //console.log(results);
@@ -57,6 +63,7 @@ let DBRExtension = {
     container.id = "enhancerUIContainer";
     if ('apex' in window) {
       this.regionID = pConfig.regionID;
+      this.item = pConfig.item;
       const region = document.getElementById(this.regionID);
       region.appendChild(container);
     }else{
