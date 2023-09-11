@@ -23,6 +23,11 @@ Run the following code to stop scanning:
 DBRExtension.stopScanning();
 DBRExtension.close();
 ```
+Run the following code to get the barcode results of the last successful scan:
+
+```js
+DBRExtension.getResults();
+```
 
 ## Attributes
 
