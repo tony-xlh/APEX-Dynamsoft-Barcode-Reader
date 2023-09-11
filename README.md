@@ -1,6 +1,6 @@
 # APEX-Dynamsoft-Barcode-Reader
 
-APEX Plug-in to scan barcodes using Dynamsoft Barcode Reader
+APEX Plug-in to scan barcodes using Dynamsoft Barcode Reader v9.
 
 [Online demo](https://apex.oracle.com/pls/apex/r/dynamsoft/dynamsoft-demos/barcode-scanner?session=7986978607494)
 
@@ -17,10 +17,22 @@ Run the following code to start scanning:
 })();
 ```
 
-
 Run the following code to stop scanning:
 
 ```js
 DBRExtension.stopScanning();
 DBRExtension.close();
 ```
+
+## Attributes
+
+* styles. CSS styles for the container.
+* license. License for Dynamsoft Barcode Reader. You can apply your license [here](https://www.dynamsoft.com/customer/license/trialLicense?product=dbr).
+* Barcode result container. Specify the ID for the container of the barcode result.
+* template. Specify the runtime settings for Dynamsoft Barcode Reader.
+
+## Blog
+
+[How to Scan Barcodes in an Oracle APEX Application](https://www.dynamsoft.com/codepool/oracle-apex-barcode-scanner.html)
+
+
