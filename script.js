@@ -115,8 +115,16 @@ let DBRExtension = {
     return this.barcodeResults;
   },
   load: async function(pConfig){
-    await this.loadLibrary("https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.6.11/dist/dbr.js","text/javascript");
-    await this.loadLibrary("https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@3.3.1/dist/dce.js","text/javascript");
+    try {
+      window.Dynamsoft.DBR.BarcodeScanner;
+    }catch{
+      await this.loadLibrary("https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.6.11/dist/dbr.js","text/javascript");
+    }
+    try {
+      window.Dynamsoft.DCE.CameraEnhancer;
+    }catch{
+      await this.loadLibrary("https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@3.3.1/dist/dce.js","text/javascript");
+    }
     if (pConfig.license) {
       Dynamsoft.DBR.BarcodeScanner.license = pConfig.license;
     }else{
