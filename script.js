@@ -125,10 +125,12 @@ let DBRExtension = {
     }catch{
       await this.loadLibrary("https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@3.3.1/dist/dce.js","text/javascript");
     }
-    if (pConfig.license) {
-      Dynamsoft.DBR.BarcodeScanner.license = pConfig.license;
-    }else{
-      Dynamsoft.DBR.BarcodeScanner.license = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==";
+    if (Dynamsoft.DBR.BarcodeScanner.isWasmLoaded() == false) {
+      if (pConfig.license) {
+        Dynamsoft.DBR.BarcodeScanner.license = pConfig.license;
+      }else{
+        Dynamsoft.DBR.BarcodeScanner.license = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==";
+      }
     }
   },
   loadLibrary: function (src,type,id,data){
