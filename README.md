@@ -1,6 +1,6 @@
 # APEX-Dynamsoft-Barcode-Reader
 
-APEX Plug-in to scan barcodes using Dynamsoft Barcode Reader v9.
+APEX Plug-in to scan barcodes using Dynamsoft Barcode Reader v9. [Step-by-step Guide](https://github.com/tony-xlh/APEX-Dynamsoft-Barcode-Reader/issues/2)
 
 [Online demo](https://apex.oracle.com/pls/apex/r/dynamsoft/dynamsoft-demos/barcode-scanner?session=7986978607494)
 
