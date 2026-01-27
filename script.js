@@ -8,7 +8,7 @@ let DBRExtension = {
   barcodeResults:undefined,
   open: async function(){
     document.getElementById("enhancerUIContainer").style.display = "";
-    await this.enhancer.open(true);
+    await this.enhancer.open();
   },
   close: function(){
     this.enhancer.close(true);
@@ -18,7 +18,7 @@ let DBRExtension = {
     this.stopScanning();
     let pThis = this;
     const captureAndDecode = async function() {
-      if (!pThis.enhancer || !pThis.reader) {
+      if (!pThis.enhancer || !pThis.router) {
         return;
       }
       if (pThis.enhancer.isOpen() === false) {
@@ -28,21 +28,24 @@ let DBRExtension = {
         return;
       }
       pThis.processing = true; // set decoding to true so that the next frame will be skipped if the decoding has not completed.
-      let frame = pThis.enhancer.getFrame();
+      let frame = pThis.enhancer.fetchImage();
+      console.log(frame);
       if (frame) {
-        let results = await pThis.reader.decode(frame);
-        if (results.length > 0) {
+        let capturedResult = await pThis.router.capture(frame,"ReadBarcodes_Default");
+        console.log(capturedResult);
+        if (capturedResult.decodedBarcodesResult) {
+          let results = capturedResult.decodedBarcodesResult.barcodeResultItems;
           pThis.barcodeResults = results;
           if ('apex' in window) {
             if (pThis.item) {
-              apex.item(pThis.item).setValue(results[0].barcodeText);
+              apex.item(pThis.item).setValue(results[0].text);
             }
             //if (pThis.ajax) {
             //  apex.server.process("SINGLE_BARCODE_SCANNED", {x01:results[0].barcodeText}, {dataType: "text", success: function(){}});
             //}
           }
         }
-        //console.log(results);
+        
         pThis.processing = false;
       }
     }
@@ -56,11 +59,13 @@ let DBRExtension = {
     this.processing = false;
   },
   init: async function(pConfig){
-    this.reader = await Dynamsoft.DBR.BarcodeScanner.createInstance();
-    this.enhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance();
-    await this.enhancer.setUIElement(Dynamsoft.DCE.CameraEnhancer.defaultUIElementURL);
+    Dynamsoft.Core.CoreModule.loadWasm();
+    this.router = await Dynamsoft.CVR.CaptureVisionRouter.createInstance();
+    let cameraView = await Dynamsoft.DCE.CameraView.createInstance();
+    this.enhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance(cameraView);
     let container = document.createElement("div");
     container.id = "enhancerUIContainer";
+    container.append(cameraView.getUIElement());
     if ('apex' in window) {
       this.regionID = pConfig.regionID;
       this.item = pConfig.item;
@@ -76,16 +81,16 @@ let DBRExtension = {
       }
     }
     if (pConfig.template) {
-      await this.reader.initRuntimeSettingsWithString(pConfig.template);
+      await this.router.initSettings(pConfig.template);
     }
     this.enhancer.on("played", (playCallbackInfo) => {
       if (this.interval) {
         this.startScanning();
       }
     });
-    container.appendChild(this.enhancer.getUIElement());
+
     // The following line hides the close button
-    document.getElementsByClassName("dce-btn-close")[0].style.display = "none";
+    //document.getElementsByClassName("dce-btn-close")[0].style.display = "none";
     container.style.display = "none";
     if ('apex' in window) {
       apex.region.create(
@@ -116,22 +121,16 @@ let DBRExtension = {
   },
   load: async function(pConfig){
     try {
-      window.Dynamsoft.DBR.BarcodeScanner;
+      window.Dynamsoft.CVR.CaptureVisionRouter;
     }catch{
-      await this.loadLibrary("https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.6.11/dist/dbr.js","text/javascript");
+      await this.loadLibrary("https://cdn.jsdelivr.net/npm/dynamsoft-barcode-reader-bundle@11.2.4000/dist/dbr.bundle.js","text/javascript");
     }
-    try {
-      window.Dynamsoft.DCE.CameraEnhancer;
-    }catch{
-      await this.loadLibrary("https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@3.3.1/dist/dce.js","text/javascript");
+    if (pConfig.license) {
+      Dynamsoft.License.LicenseManager.initLicense(pConfig.license);
+    }else{
+      Dynamsoft.License.LicenseManager.initLicense("DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==");
     }
-    if (Dynamsoft.DBR.BarcodeScanner.isWasmLoaded() == false) {
-      if (pConfig.license) {
-        Dynamsoft.DBR.BarcodeScanner.license = pConfig.license;
-      }else{
-        Dynamsoft.DBR.BarcodeScanner.license = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==";
-      }
-    }
+
   },
   loadLibrary: function (src,type,id,data){
     return new Promise(function (resolve, reject) {
