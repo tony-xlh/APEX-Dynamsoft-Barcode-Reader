@@ -90,11 +90,14 @@ let DBRExtension = {
     return this.barcodeResults;
   },
   load: async function(pConfig){
+
     try {
-      window.Dynamsoft.CVR.CaptureVisionRouter;
-    }catch{
-      await this.loadLibrary("https://cdn.jsdelivr.net/npm/dynamsoft-barcode-reader-bundle@11.2.4000/dist/dbr.bundle.js","text/javascript");
+        console.log("try loading from static resources: "+"https://oracleapex.com/ords/"+apex.env.APP_FILES+"dbr11/dbr.bundle.js");
+        await this.loadLibrary("https://oracleapex.com/ords/"+apex.env.APP_FILES+"dbr11/dbr.bundle.js","text/javascript");
+    }catch (e) {
+        await this.loadLibrary("https://cdn.jsdelivr.net/npm/dynamsoft-barcode-reader-bundle@11.2.4000/dist/dbr.bundle.js","text/javascript");
     }
+
     if (pConfig.license) {
       Dynamsoft.License.LicenseManager.initLicense(pConfig.license);
     }else{
