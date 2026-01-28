@@ -1,62 +1,24 @@
 let DBRExtension = {
-  reader:undefined,
+  router:undefined,
   enhancer:undefined,
   regionID:undefined,
   item:undefined,
-  interval:undefined,
-  processing:undefined,
   barcodeResults:undefined,
   open: async function(){
     document.getElementById("enhancerUIContainer").style.display = "";
     await this.enhancer.open();
   },
   close: function(){
+    this.stopScanning();
     this.enhancer.close(true);
     document.getElementById("enhancerUIContainer").style.display = "none";
   },
   startScanning: function(){
     this.stopScanning();
-    let pThis = this;
-    const captureAndDecode = async function() {
-      if (!pThis.enhancer || !pThis.router) {
-        return;
-      }
-      if (pThis.enhancer.isOpen() === false) {
-        return;
-      }
-      if (pThis.processing === true) {
-        return;
-      }
-      pThis.processing = true; // set decoding to true so that the next frame will be skipped if the decoding has not completed.
-      let frame = pThis.enhancer.fetchImage();
-      console.log(frame);
-      if (frame) {
-        let capturedResult = await pThis.router.capture(frame,"ReadBarcodes_Default");
-        console.log(capturedResult);
-        if (capturedResult.decodedBarcodesResult) {
-          let results = capturedResult.decodedBarcodesResult.barcodeResultItems;
-          pThis.barcodeResults = results;
-          if ('apex' in window) {
-            if (pThis.item) {
-              apex.item(pThis.item).setValue(results[0].text);
-            }
-            //if (pThis.ajax) {
-            //  apex.server.process("SINGLE_BARCODE_SCANNED", {x01:results[0].barcodeText}, {dataType: "text", success: function(){}});
-            //}
-          }
-        }
-        
-        pThis.processing = false;
-      }
-    }
-    this.interval = setInterval(captureAndDecode,100); // set an interval to read barcodes
+    this.router.startCapturing("ReadSingleBarcode");
   },
   stopScanning: function(){
-    if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = undefined;
-    }
-    this.processing = false;
+    this.router.stopCapturing();
   },
   init: async function(pConfig){
     Dynamsoft.Core.CoreModule.loadWasm();
@@ -83,14 +45,22 @@ let DBRExtension = {
     if (pConfig.template) {
       await this.router.initSettings(pConfig.template);
     }
-    this.enhancer.on("played", (playCallbackInfo) => {
-      if (this.interval) {
-        this.startScanning();
+    this.router.setInput(this.enhancer);
+    let pThis = this;
+    this.router.addResultReceiver({ onDecodedBarcodesReceived: (result) => {
+      if (result.barcodeResultItems?.length) {
+          let results = result.barcodeResultItems;
+          pThis.barcodeResults = results;
+          if ('apex' in window) {
+            if (pThis.item) {
+              apex.item(pThis.item).setValue(results[0].text);
+            }
+            //if (pThis.ajax) {
+            //  apex.server.process("SINGLE_BARCODE_SCANNED", {x01:results[0].barcodeText}, {dataType: "text", success: function(){}});
+            //}
+          }
       }
-    });
-
-    // The following line hides the close button
-    //document.getElementsByClassName("dce-btn-close")[0].style.display = "none";
+    }});
     container.style.display = "none";
     if ('apex' in window) {
       apex.region.create(
