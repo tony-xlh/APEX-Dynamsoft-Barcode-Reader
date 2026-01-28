@@ -1,6 +1,6 @@
 {
   "name": "Barcode Scanner",
-  "version": "1.1",
+  "version": "11",
   "description": "This Region Plug-in is used to scan barcodes using Dynamsoft Barcode Reader",
   "keywords": ["oracle", "apex", "plugin", "dynamsoft", "barcode", "qrcode", "scan"],
   "homepage": "https://github.com/tony-xlh/APEX-Dynamsoft-Barcode-Reader",
