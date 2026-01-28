@@ -1,6 +1,6 @@
 # APEX-Dynamsoft-Barcode-Reader
 
-APEX Plug-in to scan barcodes using Dynamsoft Barcode Reader v9.
+APEX Plug-in to scan barcodes using Dynamsoft Barcode Reader v11.
 
 [Online demo](https://apex.oracle.com/pls/apex/r/dynamsoft/dynamsoft-demos/barcode-scanner?session=7986978607494)
 
@@ -8,7 +8,7 @@ Run the following code to start scanning:
 
 ```js
 (async () => {
-  if (DBRExtension.reader) {
+  if (DBRExtension.router) {
     await DBRExtension.open(); // open the camera
     DBRExtension.startScanning(); // start a loop to read barcodes from camera frames
   }else{
